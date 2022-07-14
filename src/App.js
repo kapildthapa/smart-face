@@ -8,32 +8,36 @@ import Particle from './components/Particles/Particles';
 import Clarifai from 'clarifai';
 import './App.css';
 
-// const app = new Clarifai.App({
-//   apiKey: 'b691f6d8671d495eb1e0083d878e3af7'
-// });
+const app = new Clarifai.App({
+  apiKey: 'b691f6d8671d495eb1e0083d878e3af7'
+});
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       input: '',
+      imgaeUrl: '',
     }
   }
 
   onInputChange = (event) => {
-    console.log(event.target.value);
+    this.setState({input: event.target.value});
   }
 
   onButtonSubmit = () => {
-    console.log('click');
-    // app.models.predict("a403429f2ddf4b49b307e318f00e528b", "https://samples.clarifai.com/face-det.jpg").then(
-    //   function(response) {
-    //     console.log(response);
-    //   },
-    //   function(err) {
+    this.setState({imageUrl: this.state.input});
+    app.models.predict(
+      Clarifai.FACE_DETECT_MODEL,
+      this.state.input)
+      .then(
+      function(response) {
+        console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+      },
+      function(err) {
 
-    //   }
-    // );
+      }
+    );
   }
 
   render() {    
@@ -47,7 +51,7 @@ class App extends React.Component {
           onInputChange={this.onInputChange}
           onButtonSubmit={this.onButtonSubmit}
         />
-        <FaceRecognition />
+        <FaceRecognition imageUrl={this.state.imageUrl}  />
       </div>
     );
   }
